@@ -1,0 +1,297 @@
+:root {
+    --bg-deep: #080808; /* 比纯黑稍微浅一点点的深邃黑 */
+    --bg-surface: rgba(20, 20, 20, 0.6);
+    --fg-primary: #e0e0e0;
+    --fg-secondary: #8f8f8f;
+  
+    /* 香槟金配色体系 */
+    --gold-base: #C2A375; 
+    --gold-light: #E3CFA8;
+    --gold-dark: #8c7048;
+    
+    /* 渐变流光 */
+    --gold-grad-text: linear-gradient(135deg, #E3CFA8 0%, #C2A375 100%);
+    --gold-grad-border: linear-gradient(135deg, rgba(194, 163, 117, 0.5) 0%, rgba(140, 112, 72, 0.1) 100%);
+    
+    --font-serif: "Songti SC", "Noto Serif SC", serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+    --max-width: 768px;
+    --header-height: 60px;
+  }
+  
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+  
+  body {
+    background: var(--bg-deep);
+    color: var(--fg-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* --- V2.1 核心升级：香槟星河背景 --- */
+  .bg-noise { display: none; } /* 废弃噪点 */
+  
+  .bg-glow {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    /* 底部金色极光 */
+    background: 
+      radial-gradient(circle at 50% 120%, rgba(194, 163, 117, 0.15), transparent 60%),
+      radial-gradient(circle at 20% -20%, rgba(255, 255, 255, 0.03), transparent 40%);
+  }
+
+  /* 纯CSS绘制星空（性能极佳） */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -2;
+    pointer-events: none;
+    background-image: 
+        /* 大星 - 香槟色 */
+        radial-gradient(1.5px 1.5px at 10% 20%, rgba(194, 163, 117, 0.6), transparent),
+        radial-gradient(1.5px 1.5px at 90% 80%, rgba(194, 163, 117, 0.5), transparent),
+        radial-gradient(1.5px 1.5px at 50% 50%, rgba(194, 163, 117, 0.4), transparent),
+        /* 小星 - 白色/浅金 */
+        radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 70% 10%, rgba(227, 207, 168, 0.3), transparent),
+        radial-gradient(1px 1px at 40% 90%, rgba(255,255,255,0.2), transparent);
+    background-size: 100% 100%;
+    animation: twinkle 6s infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.02); }
+  }
+  
+  /* --- 通用组件 --- */
+  .btn-text { background: none; border: none; color: var(--fg-secondary); font-size: 14px; cursor: pointer; padding: 8px; }
+  .btn-text-gold { background: none; border: none; color: var(--gold-base); font-size: 14px; cursor: pointer; padding: 8px; letter-spacing: 1px; }
+  
+  .btn-gold-outline {
+    background: transparent;
+    border: 1px solid var(--gold-base);
+    color: var(--gold-base);
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+  .btn-gold-outline:hover {
+    background: var(--gold-base); color: var(--bg-deep);
+    box-shadow: 0 0 15px rgba(194, 163, 117, 0.3); /* 发光反馈 */
+  }
+  
+  /* --- 布局框架 --- */
+  .header {
+    height: var(--header-height);
+    display: flex; justify-content: center; align-items: center;
+    border-bottom: 1px solid rgba(194, 163, 117, 0.1);
+    padding: 0 20px;
+    position: fixed; top:0; left:0; right:0; z-index: 10;
+    /* 玻璃拟态 */
+    background: rgba(8, 8, 8, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .header-inner { width: 100%; max-width: var(--max-width); display: flex; justify-content: space-between; align-items: center; }
+  
+  .brand { font-family: var(--font-serif); display: flex; flex-direction: column; align-items: center; line-height: 1; }
+  .brand-cn { font-size: 18px; font-weight: bold; background: var(--gold-grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .brand-en { font-size: 9px; letter-spacing: 0.2em; color: var(--gold-dark); margin-top: 5px; }
+  
+  .main-container {
+    flex: 1;
+    margin-top: var(--header-height);
+    position: relative;
+  }
+  
+  /* 视图切换逻辑 */
+  .view-section {
+    display: none;
+    min-height: calc(100vh - var(--header-height));
+    padding: 30px 20px;
+  }
+  .view-section.active {
+    display: block;
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  /* --- 视图1：抽签仪式区 --- */
+  #drawView.active { display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+  .draw-container {
+    flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; max-width: var(--max-width);
+    padding-bottom: 60px;
+  }
+  .draw-intro { text-align: center; margin-bottom: 50px; }
+  .draw-title { 
+      font-family: var(--font-serif); font-size: 32px; margin: 0 0 12px 0; font-weight: normal; 
+      color: #fff;
+      text-shadow: 0 0 20px rgba(194, 163, 117, 0.2); /* 标题微光 */
+  }
+  .draw-subtitle { color: var(--fg-secondary); font-size: 14px; margin: 0; letter-spacing: 1px; opacity: 0.8; }
+  
+  .draw-stage { width: 100%; display: flex; justify-content: center; min-height: 400px; align-items: center; position: relative; }
+  .draw-state { display: none; width: 100%; }
+  .draw-state.active { display: flex; flex-direction: column; align-items: center; animation: floatUp 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  
+  /* 抽签按钮 (星球核心) */
+  .draw-trigger-btn {
+    position: relative;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    /* 按钮本身的黑金质感 */
+    background: radial-gradient(circle at 30% 30%, #2a2a2a, #000); 
+    border: 1px solid rgba(194, 163, 117, 0.4);
+    cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 
+        0 10px 40px -10px rgba(0,0,0,0.8),
+        inset 0 2px 20px rgba(194, 163, 117, 0.1);
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .draw-trigger-btn:hover { 
+      transform: translateY(-5px) scale(1.02); 
+      border-color: var(--gold-light); 
+      box-shadow: 0 0 30px rgba(194, 163, 117, 0.3); /* 悬停发光 */
+  }
+  .trigger-inner { display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 2; }
+  .trigger-icon { font-size: 32px; color: var(--gold-base); text-shadow: 0 0 10px rgba(194, 163, 117, 0.5); }
+  .trigger-text { color: var(--gold-light); font-size: 14px; letter-spacing: 3px; font-family: var(--font-serif); }
+  
+  /* 结果金卡 */
+  .golden-card {
+    background: rgba(15, 15, 15, 0.85); /* 半透明以透出背景星光 */
+    backdrop-filter: blur(10px);
+    border: 1px solid transparent;
+    border-image: var(--gold-grad-border) 1;
+    padding: 40px 30px;
+    width: 100%; max-width: 450px;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.8);
+    position: relative;
+  }
+  /* 卡片顶部的装饰线条 */
+  .golden-card::after {
+      content: ""; position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 1px; background: var(--gold-base);
+      box-shadow: 0 0 10px var(--gold-base);
+  }
+  
+  .card-content { text-align: center; margin-bottom: 40px; }
+  .card-meta { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .card-cat { color: var(--gold-base); opacity: 0.9; border: 1px solid rgba(194,163,117,0.3); padding: 2px 6px; border-radius: 2px;}
+  .card-tag { color: var(--fg-secondary); padding: 2px 0; }
+  
+  .card-quote {
+    font-family: var(--font-serif);
+    font-size: 24px; line-height: 1.5;
+    color: var(--gold-light);
+    margin-bottom: 25px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .card-refined {
+    font-size: 14px; color: var(--fg-secondary);
+    padding-top: 20px; border-top: 1px solid rgba(194, 163, 117, 0.15);
+    font-style: italic;
+  }
+  .card-actions { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
+  .card-actions button { width: 100%; max-width: 280px; }
+  
+  .draw-footer { text-align: center; padding: 20px; }
+  .meta-text { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 2px; }
+  
+  /* --- 视图2：列表区 --- */
+  .list-header { text-align: center; margin-bottom: 40px; }
+  .list-title { font-family: var(--font-serif); font-size: 24px; color: var(--fg-primary); margin: 0 0 8px 0; font-weight: normal; }
+  
+  .controls { max-width: var(--max-width); margin: 0 auto 30px; }
+  .control-row { display: flex; gap: 12px; }
+  .field { display: flex; }
+  .field-grow { flex: 1; }
+  
+  .select, .input {
+    height: 44px; width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--fg-primary);
+    border-radius: 4px;
+    padding: 0 16px;
+    outline: none; font-size: 14px;
+    transition: all 0.3s;
+  }
+  .select:focus, .input:focus { border-color: var(--gold-base); background: rgba(255,255,255,0.05); }
+  
+  .list-wrap { max-width: var(--max-width); margin: 0 auto; }
+  .list { display: grid; gap: 16px; }
+  
+  .item {
+    background: var(--bg-surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(5px);
+  }
+  .item:hover { border-color: rgba(194, 163, 117, 0.4); background: rgba(30, 30, 30, 0.8); transform: translateY(-2px); }
+  .item::before {
+    content: ""; position: absolute; top:0; left:0; width: 2px; height: 0%; background: var(--gold-base); transition: height 0.3s;
+  }
+  .item:hover::before { height: 100%; }
+  
+  .item-head { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  .item-cat { color: var(--gold-base); }
+  .item-tag { color: var(--fg-secondary); opacity: 0.7; }
+  
+  .quote { margin: 0; font-size: 16px; line-height: 1.6; color: var(--fg-primary); font-family: var(--font-serif); }
+  .refined-preview { margin-top: 12px; font-size: 13px; color: var(--fg-secondary); display: flex; align-items: center; gap: 8px; }
+  
+  mark { background: rgba(227, 207, 168, 0.3); color: var(--gold-light); padding: 2px 4px; border-radius: 2px; font-weight: bold; }
+  
+  .item-footer { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .like-btn { background: none; border: 1px solid rgba(194, 163, 117, 0.3); color: var(--fg-secondary); padding: 4px 8px; border-radius: 2px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .like-btn:hover { border-color: var(--gold-base); color: var(--gold-base); }
+  .like-btn.liked { animation: pulse 0.3s ease; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; justify-content: center; }
+  .hot-tag { display: inline-block; padding: 6px 12px; background: rgba(194, 163, 117, 0.1); border: 1px solid rgba(194, 163, 117, 0.3); border-radius: 16px; font-size: 12px; color: var(--gold-base); cursor: pointer; transition: all 0.2s; }
+  .hot-tag:hover { background: rgba(194, 163, 117, 0.2); border-color: var(--gold-base); transform: translateY(-2px); }
+  
+  .empty { text-align: center; padding: 60px 20px; color: var(--fg-secondary); font-size: 14px; letter-spacing: 1px; }
+  
+  /* 底部署名 */
+  .signature { text-align: center; margin: 60px auto 30px; color: var(--fg-secondary); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.6; }
+  .sep { margin: 0 6px; opacity: 0.4; color: var(--gold-base); }
+  .op-5 { opacity: 0.5; margin-top: 8px; }
+  
+  /* 弹窗 */
+  .toast {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+    background: #222;
+    border: 1px solid var(--gold-base);
+    color: var(--gold-light);
+    padding: 10px 20px; border-radius: 4px; font-size: 13px; z-index: 99;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    letter-spacing: 1px;
+    animation: toastUp 0.3s ease;
+  }
+  @keyframes toastUp { from{opacity:0; transform: translate(-50%, 20px);} to{opacity:1; transform: translate(-50%, 0);} }
+  
+  @media (max-width: 480px) {
+    .draw-title { font-size: 28px; }
+    .draw-trigger-btn { width: 140px; height: 140px; }
+    .card-quote { font-size: 20px; }
+    .view-section { padding: 20px 16px; }
+  }
